@@ -1,17 +1,17 @@
 [package]
-name = "webservice"
+name = "sqltest"
 version = "0.1.0"
 edition = "2021"
-default-run="teacher-service"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-actix-web="4.0.0" 
-actix-rt="2.6.0"
-serde={version="1.0.132",features=["derive"]}
-chrono={version="0.4.19",features=["serde"]}
-dotenv="0.15.0"
+
+actix-rt="2.8.0"
+actix-web="3.3.3"
+dotenv = "0.15.0"
+chrono = {version = "0.4.19", features = ["serde"]}
+serde = {version = "1.0.134", features = ["derive"]}
 openssl = {version="0.10.38",features=["vendored"]}
 sqlx = {version = "0.6.0", default_features = false, features = [
     "mysql",
@@ -19,9 +19,3 @@ sqlx = {version = "0.6.0", default_features = false, features = [
     "macros",
     "chrono",
 ]}
-
-[[bin]]
-name="server1"
-
-[[bin]]
-name="teacher-service"
