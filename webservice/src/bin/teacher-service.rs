@@ -1,4 +1,5 @@
 use actix_web::{web,App,HttpServer};
+use errors::MyError;
 use std::io;
 use std::sync::Mutex;
 use dotenv::dotenv;
@@ -34,8 +35,12 @@ async fn main()->io::Result<()>{
     });
     let app=move || {
         App::new().app_data(shared_data.clone())
+        .app_data(web::JsonConfig::default().error_handler(|_err,_req|{
+            MyError::InvalidError("Please check your input!".to_string()).into()
+        }))
         .configure(general_routes)
         .configure(course_routes)
+        .configure(teacher_routes)
     };
     HttpServer::new(app).bind("127.0.0.1:3001")?.run().await
 }
