@@ -19,6 +19,7 @@ pub async fn get_courses_for_teacher(
     app_state:web::Data<AppState>,
 )->Result<HttpResponse,MyError>{
     let teacher_id=i32::try_from(params.0).unwrap();
+    //map函数对Ok的值应用函数，对Err的值保持不变
     get_courses_for_teacher_db(&app_state.mb_pool, teacher_id).await
     .map(|courses|HttpResponse::Ok().json(courses))
 }

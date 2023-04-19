@@ -1,4 +1,5 @@
-use actix_web::{web,App,HttpServer};
+use actix_web::{web,App,HttpServer,http};
+use errors::MyError;
 use std::io;
 use std::sync::Mutex;
 use dotenv::dotenv;
@@ -19,6 +20,7 @@ mod dbaccess;
 mod errors;
 
 use routers::*;
+use actix_cors::Cors;
 use state::AppState;
 
 #[actix_rt::main]
@@ -33,9 +35,25 @@ async fn main()->io::Result<()>{
         mb_pool:pool,
     });
     let app=move || {
+        let cors=Cors::default()
+            .allowed_origin("http://localhost:8000/")
+            .allowed_origin_fn(|origin,_req_head|{
+                //允许所有以http://localhost开头的域名
+                origin.as_bytes().starts_with(b"http://localhost")
+            })
+            .allowed_methods(vec!["GET","POST","DELETE"])
+            .allowed_headers(vec![http::header::AUTHORIZATION,http::header::ACCEPT])
+            .allowed_header(http::header::CONTENT_TYPE)
+            .max_age(3600);
+
         App::new().app_data(shared_data.clone())
+        .app_data(web::JsonConfig::default().error_handler(|_err,_req|{
+            MyError::InvalidError("Please check your input!".to_string()).into()
+        }))
         .configure(general_routes)
         .configure(course_routes)
+        .configure(teacher_routes)
+        .wrap(cors)
     };
     HttpServer::new(app).bind("127.0.0.1:3001")?.run().await
 }

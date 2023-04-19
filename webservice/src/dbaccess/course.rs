@@ -111,6 +111,7 @@ pub async fn update_course_db(
     .bind(course_id)
     .fetch_optional(pool)
     .await
+    //map_err()对Ok保持不变，对Err应用函数转换成MyError错误类型
     .map_err(|_err| MyError::NotFound("Course Id not found".into()))?;
 
     let mut tx=pool.begin().await?;
